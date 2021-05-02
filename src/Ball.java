@@ -6,30 +6,30 @@ public class Ball extends Actor{
 	private int dy;
 	
 	public Ball() {
-		setImage(new Image ("ball.png"));
-		dx = 5;
-		dy = 5;
+		String path = getClass().getClassLoader().getResource("resources/ball.png").toString();
+		Image img = new Image(path);
+		setImage(img);
+		dx = 1;
+		dy = 1;
 		
 	}
 	
 	@Override
 	public void act(long now) {
 		move(dx, dy);
-		if (getX() <= getWidth() / 2) {
+		if (getX() < 0) {
 			dx = -dx;
-			setX(getWidth() / 2);
-		}else if (getX() >= getWorld().getWidth() - getWidth() / 2) {
+			setX(0);
+		}else if (getX() + (getWidth() / 2) > getWorld().getWidth()) {
 			dx = -dx;
-			setX(getWorld().getWidth() - getWidth() / 2);
-		}
-		if (getY() <= getHeight() / 2) {
+			setX(getWorld().getWidth() - (getWidth() / 2));
+		}else if (getY() < 0) {
 			dy = -dy;
-			setY(getHeight() / 2);
-		}else if (getY() >= getWorld().getHeight() - getHeight() / 2) {
+			setY(0);
+		}else if (getY() + (getWidth() / 2) > getWorld().getHeight()) {
 			dy = -dy;
-			setY(getWorld().getHeight() - getHeight() / 2);
+			setY(getWorld().getHeight() - (getHeight() / 2));
 		}
-		
 	}
 	
 	

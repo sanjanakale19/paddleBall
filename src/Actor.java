@@ -7,8 +7,8 @@ public abstract class Actor extends ImageView{
 	public abstract void act(long now);
 	
 	public void move(double dx, double dy) {
-		setX(dx + getX());
-		setY(dy + getY());
+		setX(getX() + dx);
+		setY(getY() + dy);
 	}
 	
 	public World getWorld() {

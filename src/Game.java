@@ -14,7 +14,7 @@ public class Game extends Application{
 		stage.setTitle("Game");
 		BorderPane rootNode = new BorderPane(); 
 		BallWorld ballWorld = new BallWorld();
-		ballWorld.setPrefSize(500, 500);
+		ballWorld.setPrefSize(700, 500);
 		rootNode.setCenter(ballWorld);
 		
 		Scene scene = new Scene(rootNode);
