@@ -11,7 +11,7 @@ public class Ball extends Actor{
 		setImage(img);
 		dx = 1;
 		dy = 1;
-		
+
 	}
 	
 	@Override
@@ -32,6 +32,9 @@ public class Ball extends Actor{
 		}else if (getY() + (getWidth()) > getWorld().getHeight()) {
 			dy = -dy;
 			setY(getWorld().getHeight() - (getHeight()));
+
+			Score current = ((BallWorld)getWorld()).getScore();
+			current.setValue(current.getValue() - 1000);
 		}
 		
 		

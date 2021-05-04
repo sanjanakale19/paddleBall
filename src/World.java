@@ -1,9 +1,10 @@
 import java.util.ArrayList;
 import javafx.animation.AnimationTimer;
+import javafx.scene.Node;
 import javafx.scene.layout.Pane;
 
 public abstract class World extends Pane{
-	
+
 	private AnimationTimer timer;
 	
 	public World() {
@@ -13,7 +14,10 @@ public abstract class World extends Pane{
 			public void handle(long now) {
 				act(now);
 				for (int i = 0; i < getChildren().size(); i++) {
-					((Actor) getChildren().get(i)).act(now);
+					Node node = getChildren().get(i);
+					if (node instanceof Actor) {
+						((Actor)node).act(now);
+					}
 				}
 				
 			}
