@@ -24,15 +24,15 @@ public class Ball extends Actor{
 		if (getX() < 0) {
 			dx = -dx;
 			setX(0);
-		}else if (getX() + (getWidth() / 2) > getWorld().getWidth()) {
+		}else if (getX() + (getWidth()) > getWorld().getWidth()) {
 			dx = -dx;
-			setX(getWorld().getWidth() - (getWidth() / 2));
+			setX(getWorld().getWidth() - (getWidth()));
 		}else if (getY() < 0) {
 			dy = -dy;
 			setY(0);
-		}else if (getY() + (getWidth() / 2) > getWorld().getHeight()) {
+		}else if (getY() + (getWidth()) > getWorld().getHeight()) {
 			dy = -dy;
-			setY(getWorld().getHeight() - (getHeight() / 2));
+			setY(getWorld().getHeight() - (getHeight()));
 		}
 		
 		
