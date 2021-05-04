@@ -40,7 +40,7 @@ public abstract class World extends Pane{
 	public <A extends Actor> java.util.List<A> getObjects(java.lang.Class<A> cls){
 		ArrayList<A> arr = new ArrayList<>();
 		for (int i = 0; i < getChildren().size(); i++) {
-			if (getChildren().get(i).getClass().isInstance(cls)) {
+			if (getChildren().get(i).getClass().isAssignableFrom(cls)) {
 				arr.add(cls.cast(getChildren().get(i)));
 			}
 		}

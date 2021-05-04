@@ -18,7 +18,6 @@ public class Ball extends Actor{
 	public void act(long now) {
 		move(dx, dy);
 		if (getOneIntersectingObject(Paddle.class) != null) {
-			System.out.println("Should bounce");
 			dy = -dy;
 		}
 		if (getX() < 0) {
