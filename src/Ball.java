@@ -36,6 +36,9 @@ public class Ball extends Actor{
 				dy = -dy;
 			}
 			getWorld().remove(getOneIntersectingObject(Brick.class));
+
+			Score current = ((BallWorld)getWorld()).getScore();
+			current.setValue(current.getValue() + 100);
 		}
 		
 		if (getX() < 0) {

@@ -6,7 +6,7 @@ public class Score extends Text {
 
     public Score() {
         value = 0;
-        setFont(new Font("serif", 16));
+        setFont(new Font("serif", 20));
         updateDisplay();
     }
 
