@@ -20,6 +20,24 @@ public class Ball extends Actor{
 		if (getOneIntersectingObject(Paddle.class) != null) {
 			dy = -dy;
 		}
+		
+		if (getOneIntersectingObject(Brick.class) != null) {
+			double brickX = getOneIntersectingObject(Brick.class).getX();
+			double brickY = getOneIntersectingObject(Brick.class).getY();
+			double brickWidth = getOneIntersectingObject(Brick.class).getWidth();
+			double brickHeight = getOneIntersectingObject(Brick.class).getHeight();
+			
+			if (getX() >= brickX && getX() <= (brickX + brickWidth)) {
+				dy = -dy;
+			}else if (getY() >= brickY && getY() <= (brickY + brickHeight)) {
+				dx = -dx;
+			}else {
+				dx = -dx;
+				dy = -dy;
+			}
+			getWorld().remove(getOneIntersectingObject(Brick.class));
+		}
+		
 		if (getX() < 0) {
 			dx = -dx;
 			setX(0);
@@ -35,9 +53,7 @@ public class Ball extends Actor{
 
 			Score current = ((BallWorld)getWorld()).getScore();
 			current.setValue(current.getValue() - 1000);
-		}
-		
-		
+		}		
 		
 	}
 	
