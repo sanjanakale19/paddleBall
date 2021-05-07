@@ -1,9 +1,11 @@
 import javafx.scene.image.Image;
+import javafx.scene.input.KeyCode;
 
 public class Ball extends Actor{
 	
 	private int dx;
 	private int dy;
+	private boolean hitPaddle = false;
 	
 	public Ball() {
 		String path = getClass().getClassLoader().getResource("resources/ball.png").toString();
@@ -17,15 +19,44 @@ public class Ball extends Actor{
 	@Override
 	public void act(long now) {
 		move(dx, dy);
-		if (getOneIntersectingObject(Paddle.class) != null) {
-			dy = -dy;
+		if (!hitPaddle && getOneIntersectingObject(Paddle.class) != null) {
+			Paddle paddle = getOneIntersectingObject(Paddle.class);
+			if (getWorld().isKeyDown(KeyCode.LEFT) || getWorld().isKeyDown(KeyCode.RIGHT)) {
+				if (getX() > paddle.getX() - paddle.getWidth()/6 && getX() < paddle.getX() + paddle.getWidth()/6) {
+					dy = -dy;
+				} else if (getX() < paddle.getX() - paddle.getWidth()/2) {
+					dy = -dy;
+					dx = -Math.abs(dx) - 5;
+				} else if (getX() > paddle.getX() + paddle.getWidth()/2) {
+					dy = -dy;
+					dx = Math.abs(dx) + 5;
+				} else if (getWorld().isKeyDown(KeyCode.LEFT) && getX() > paddle.getX() - paddle.getWidth()/2 && getX() < paddle.getX() - paddle.getWidth()/6) {
+					dy = -dy;
+					dx = -Math.abs(dx);
+				} else if (getWorld().isKeyDown(KeyCode.RIGHT) && getX() > paddle.getX() + paddle.getWidth()/6 && getX() < paddle.getX() + paddle.getWidth()/2) {
+					dy = -dy;
+					dx = Math.abs(dx);
+				}
+			} else if (getX() > paddle.getX() - paddle.getWidth()/2 && getX() < paddle.getX() + paddle.getWidth()/2) {
+				dy = -dy;
+			} else if (getX() < paddle.getX() - paddle.getWidth()/2) {
+				dy = -dy;
+				dx = -Math.abs(dx) - 5;
+			} else if (getX() > paddle.getX() + paddle.getWidth()/2) {
+				dy = -dy;
+				dx = Math.abs(dx) + 5;
+			} 
+			hitPaddle = true;
+		} else {
+			hitPaddle = false;
 		}
 		
 		if (getOneIntersectingObject(Brick.class) != null) {
-			double brickX = getOneIntersectingObject(Brick.class).getX();
-			double brickY = getOneIntersectingObject(Brick.class).getY();
-			double brickWidth = getOneIntersectingObject(Brick.class).getWidth();
-			double brickHeight = getOneIntersectingObject(Brick.class).getHeight();
+			Brick brick = getOneIntersectingObject(Brick.class);
+			double brickX = brick.getX();
+			double brickY = brick.getY();
+			double brickWidth = brick.getWidth();
+			double brickHeight = brick.getHeight();
 			
 			if (getX() >= brickX && getX() <= (brickX + brickWidth)) {
 				dy = -dy;

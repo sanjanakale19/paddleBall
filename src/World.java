@@ -1,14 +1,19 @@
 import java.util.ArrayList;
+import java.util.HashSet;
+
 import javafx.animation.AnimationTimer;
 import javafx.scene.Node;
+import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
 
 public abstract class World extends Pane{
 
 	private AnimationTimer timer;
+	private HashSet<KeyCode> keysDown;
 	
 	public World() {
-		 timer = new AnimationTimer() {
+		keysDown = new HashSet<KeyCode>();
+		timer = new AnimationTimer() {
 			
 			@Override
 			public void handle(long now) {
@@ -23,6 +28,18 @@ public abstract class World extends Pane{
 			}
 		
 		};
+	}
+	
+	public void keyDown(KeyCode keyCode) {
+		keysDown.add(keyCode);
+	}
+	
+	public void keyUp(KeyCode keyCode) {
+		keysDown.remove(keyCode);
+	}
+	
+	public boolean isKeyDown(KeyCode keyCode) {
+		return keysDown.contains(keyCode);
 	}
 	
 	public void add(Actor actor) {

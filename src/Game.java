@@ -32,30 +32,39 @@ public class Game extends Application{
 		
 		ballWorld.start();
 		
-		ballWorld.setOnMouseMoved(new EventHandler<MouseEvent>() {
-
-			@Override
-			public void handle(MouseEvent event) {
-				if (event.getX() > (paddle.getWidth() / 2) && event.getX() < ballWorld.getWidth() - (paddle.getWidth() / 2)) {
-					paddle.setX(event.getX() - (paddle.getWidth() / 2));
-				}
-				
-				
-			}
-			
-		});
+//		ballWorld.setOnMouseMoved(new EventHandler<MouseEvent>() {
+//
+//			@Override
+//			public void handle(MouseEvent event) {
+//				if (event.getX() > (paddle.getWidth() / 2) && event.getX() < ballWorld.getWidth() - (paddle.getWidth() / 2)) {
+//					paddle.setX(event.getX() - (paddle.getWidth() / 2));
+//				}
+//				
+//				
+//			}
+//			
+//		});
 		
 		ballWorld.setOnKeyPressed(new EventHandler <KeyEvent>(){
 
 			@Override
 			public void handle(KeyEvent event) {
-				if (event.getCode() == KeyCode.RIGHT && paddle.getX() < ballWorld.getWidth() - (paddle.getWidth() + 5)) {
-					paddle.setX(paddle.getX() + 5);
-				}
-				if (event.getCode() == KeyCode.LEFT && paddle.getX() - 5 > 0) {
-					paddle.setX(paddle.getX() - 5);
-				}
-				
+				ballWorld.keyDown(event.getCode());
+//				if (event.getCode() == KeyCode.RIGHT && paddle.getX() < ballWorld.getWidth() - (paddle.getWidth() + 5)) {
+//					paddle.setX(paddle.getX() + 5);
+//				}
+//				if (event.getCode() == KeyCode.LEFT && paddle.getX() - 5 > 0) {
+//					paddle.setX(paddle.getX() - 5);
+//				}
+			}
+			
+		});
+		
+		ballWorld.setOnKeyReleased(new EventHandler <KeyEvent>() {
+
+			@Override
+			public void handle(KeyEvent event) {
+				ballWorld.keyUp(event.getCode());
 			}
 			
 		});
