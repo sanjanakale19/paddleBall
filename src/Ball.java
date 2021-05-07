@@ -21,31 +21,42 @@ public class Ball extends Actor{
 		move(dx, dy);
 		if (!hitPaddle && getOneIntersectingObject(Paddle.class) != null) {
 			Paddle paddle = getOneIntersectingObject(Paddle.class);
+			
 			if (getWorld().isKeyDown(KeyCode.LEFT) || getWorld().isKeyDown(KeyCode.RIGHT)) {
 				if (getX() > paddle.getX() - paddle.getWidth()/6 && getX() < paddle.getX() + paddle.getWidth()/6) {
+					setY(paddle.getY() - paddle.getHeight()/2 - getHeight()/2);
 					dy = -dy;
 				} else if (getX() < paddle.getX() - paddle.getWidth()/2) {
+					setX(paddle.getX() - paddle.getWidth()/2 - getWidth()/2);
 					dy = -dy;
-					dx = -Math.abs(dx) - 5;
+					dx = -Math.abs(dx) - 1;
 				} else if (getX() > paddle.getX() + paddle.getWidth()/2) {
+					setX(paddle.getX() + paddle.getWidth()/2 + getWidth()/2);
 					dy = -dy;
-					dx = Math.abs(dx) + 5;
-				} else if (getWorld().isKeyDown(KeyCode.LEFT) && getX() > paddle.getX() - paddle.getWidth()/2 && getX() < paddle.getX() - paddle.getWidth()/6) {
+					dx = Math.abs(dx) + 1;
+				}  else if (getWorld().isKeyDown(KeyCode.LEFT) && getX() > paddle.getX() - paddle.getWidth()/2 && getX() < paddle.getX() - paddle.getWidth()/6) {
+					setY(paddle.getY() - paddle.getHeight()/2 - getHeight()/2);
 					dy = -dy;
 					dx = -Math.abs(dx);
 				} else if (getWorld().isKeyDown(KeyCode.RIGHT) && getX() > paddle.getX() + paddle.getWidth()/6 && getX() < paddle.getX() + paddle.getWidth()/2) {
+					setY(paddle.getY() - paddle.getHeight()/2 - getHeight()/2);
 					dy = -dy;
 					dx = Math.abs(dx);
 				}
 			} else if (getX() > paddle.getX() - paddle.getWidth()/2 && getX() < paddle.getX() + paddle.getWidth()/2) {
+				setY(paddle.getY() - paddle.getHeight()/2 - getHeight()/2);
 				dy = -dy;
 			} else if (getX() < paddle.getX() - paddle.getWidth()/2) {
+				setX(paddle.getX() - paddle.getWidth()/2 - getWidth()/2);
 				dy = -dy;
-				dx = -Math.abs(dx) - 5;
+				dx = -Math.abs(dx) - 1;
 			} else if (getX() > paddle.getX() + paddle.getWidth()/2) {
+				setX(paddle.getX() + paddle.getWidth()/2 + getWidth()/2);
 				dy = -dy;
-				dx = Math.abs(dx) + 5;
+				dx = Math.abs(dx) + 1;
 			} 
+			System.out.println(dx + ", " + dy);
+			move(dx, dy);
 			hitPaddle = true;
 		} else {
 			hitPaddle = false;
