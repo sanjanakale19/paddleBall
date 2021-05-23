@@ -3,19 +3,23 @@ import javafx.scene.input.KeyCode;
 
 public class Ball extends Actor{
 	
-	private int dx;
-	private int dy;
+	private double dx;
+	private double dy;
 	private boolean hitPaddle = false;
 	
 	public Ball() {
+		new Ball(2, 2);
+	}
+
+	public Ball(double dx, double dy) {
 		String path = getClass().getClassLoader().getResource("resources/ball.png").toString();
 		Image img = new Image(path);
 		setImage(img);
-		dx = 1;
-		dy = 1;
-
+		this.dx = dx; this.dy = dy;
 	}
-	
+
+
+	// has a lot of bugs; ball passes through the paddle, bounces inside paddle, etc
 	@Override
 	public void act(long now) {
 		move(dx, dy);
@@ -61,7 +65,8 @@ public class Ball extends Actor{
 		} else {
 			hitPaddle = false;
 		}
-		
+
+		// if a brick is hit
 		if (getOneIntersectingObject(Brick.class) != null) {
 			Brick brick = getOneIntersectingObject(Brick.class);
 			double brickX = brick.getX();
@@ -86,13 +91,13 @@ public class Ball extends Actor{
 		if (getX() < 0) {
 			dx = -dx;
 			setX(0);
-		}else if (getX() + (getWidth()) > getWorld().getWidth()) {
+		} else if (getX() + (getWidth()) > getWorld().getWidth()) {
 			dx = -dx;
 			setX(getWorld().getWidth() - (getWidth()));
-		}else if (getY() < 0) {
+		} else if (getY() < 0) {
 			dy = -dy;
 			setY(0);
-		}else if (getY() + (getWidth()) > getWorld().getHeight()) {
+		} else if (getY() + (getWidth()) > getWorld().getHeight()) {
 			dy = -dy;
 			setY(getWorld().getHeight() - (getHeight()));
 
