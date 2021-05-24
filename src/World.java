@@ -6,7 +6,7 @@ import javafx.scene.Node;
 import javafx.scene.input.KeyCode;
 import javafx.scene.layout.Pane;
 
-public abstract class World extends Pane{
+public abstract class World extends Pane {
 
 	private AnimationTimer timer;
 	private HashSet<KeyCode> keysDown;

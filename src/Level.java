@@ -14,27 +14,18 @@ public class Level {
         this.name = name;
         rootNode = new BorderPane();
         scene = new Scene(rootNode);
+        initializeLevel();
     }
 
     public Level() {
         new Level("");
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public BorderPane getRootNode() {
-        return rootNode;
-    }
-
-    public Scene getScene(Stage stage) {
-        stage.setTitle(name);
+    private void initializeLevel() {
 
         world = new BallWorld();
         world.setPrefSize(700, 500);
         rootNode.setCenter(world);
-
 
         Ball ball = new Ball(2, 3);
         world.getChildren().add(ball);
@@ -45,8 +36,6 @@ public class Level {
         world.getChildren().add(paddle);
 
         world.start();
-
-
 
         world.setOnKeyPressed(new EventHandler<KeyEvent>(){
 
@@ -67,7 +56,18 @@ public class Level {
         });
 
         world.requestFocus();
+    }
 
+    public String getName() {
+        return name;
+    }
+
+    public BorderPane getRootNode() {
+        return rootNode;
+    }
+
+    public Scene getScene(Stage stage) {
+        stage.setTitle(name);
         return scene;
     }
 }

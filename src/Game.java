@@ -8,19 +8,20 @@ import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 
 public class Game extends Application{
+	private Stage stage;
 	
 	public static void main(String[] args) {
 		launch(args);
 	}
 
 	@Override
-	public void start(Stage stage) throws Exception {
+	public void start(Stage myStage) {
+		this.stage = myStage;
 		Level level = new Level("Simple Game");
 
-		BorderPane rootNode = level.getRootNode();
-		Scene scene = level.getScene(stage);
+		Menu menu = Menu.getOpeningScreen();
 
-		stage.setScene(scene);
+		stage.setScene(menu.getMenuScene());
 		stage.show();
 	}
 
