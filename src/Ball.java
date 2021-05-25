@@ -5,17 +5,19 @@ public class Ball extends Actor{
 	
 	private double dx;
 	private double dy;
+	private double speed;
 	private boolean hitPaddle = false;
 	
 	public Ball() {
 		new Ball(2, 2);
 	}
 
-	public Ball(double dx, double dy) {
+	public Ball(double x, double y) {
 		String path = getClass().getClassLoader().getResource("resources/ball.png").toString();
 		Image img = new Image(path);
 		setImage(img);
-		this.dx = dx; this.dy = dy;
+		dx = x; dy = y;
+		speed = Math.sqrt(dx * dx + dy * dy);
 	}
 
 
