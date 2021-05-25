@@ -17,11 +17,10 @@ public class Game extends Application{
 	@Override
 	public void start(Stage myStage) {
 		this.stage = myStage;
-		Level level = new Level("Simple Game");
 
-		Menu menu = Menu.getOpeningScreen();
-
+		Menu menu = Menu.getOpeningScreen(myStage);
 		stage.setScene(menu.getMenuScene());
+
 		stage.show();
 	}
 
