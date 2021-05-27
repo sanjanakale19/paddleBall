@@ -5,6 +5,7 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Pane;
 import javafx.stage.Stage;
 
 public class Game extends Application{
@@ -18,7 +19,14 @@ public class Game extends Application{
 	public void start(Stage myStage) {
 		this.stage = myStage;
 
+		BorderPane rootNode = new BorderPane();
+		Scene scene = new Scene(rootNode);
+
+
+
 		Menu menu = Menu.getOpeningScreen(myStage);
+//		Level.setCloudTransition(menu);
+
 		stage.setScene(menu.getMenuScene());
 
 		stage.show();

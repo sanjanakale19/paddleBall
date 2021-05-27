@@ -22,6 +22,7 @@ public class Menu extends World {
     private Scene prevScene;
     private BorderPane rootNode;
     private Color color;
+    private Color textColor;
 
     public Menu() {
         rootNode = new BorderPane();
@@ -29,6 +30,7 @@ public class Menu extends World {
         rootNode.setCenter(this);
         prevScene = null;
         color = Color.WHITE;
+        textColor = Color.ROYALBLUE;
     }
 
     @Override
@@ -42,6 +44,8 @@ public class Menu extends World {
 
     public static Menu getOpeningScreen(Stage stage) {
         Menu screen = new Menu();
+        Level.setCloudTransition(screen);
+        screen.start();
         screen.color = Color.rgb(120, 191, 255);
         screen.setPrefSize(700, 500);
         screen.setBackground(new Background(new BackgroundFill(screen.color, null, null)));
@@ -54,7 +58,7 @@ public class Menu extends World {
         Label intro = new Label("Welcome to PaddleBall");
         intro.setAlignment(Pos.CENTER);
         intro.setFont(new Font("", 40));
-        intro.setTextFill(Color.FLORALWHITE);
+        intro.setTextFill(screen.textColor);
         intro.setVisible(true);
 
         Button start = new Button("START");
@@ -71,7 +75,7 @@ public class Menu extends World {
         start.setVisible(true);
         start.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(4), new Insets(8))));
         start.setFont(new Font("", 14));
-        start.setTextFill(Color.FLORALWHITE);
+        start.setTextFill(screen.textColor);
         start.setPadding(new Insets(10, 10, 10, 10));
 
         box.getChildren().addAll(intro, start);
@@ -85,6 +89,9 @@ public class Menu extends World {
 
     public static Menu getSelectionScreen(Stage stage, Menu prevMenu) {
         Menu screen = new Menu();
+        Level.setCloudTransition(screen);
+        screen.start();
+
         screen.color = Color.rgb(120, 191, 255);
         screen.prevScene = prevMenu.getMenuScene();
         screen.setMaxSize(700, 500);
@@ -108,12 +115,12 @@ public class Menu extends World {
         Label label = new Label("Select a game mode");
         label.setVisible(true);
         label.setFont(new Font("", 30));
-        label.setTextFill(Color.FLORALWHITE);
+        label.setTextFill(screen.textColor);
         label.setAlignment(Pos.TOP_CENTER);
 
         Button classic = new Button("Classic Mode");
         classic.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(4), new Insets(8))));
-        classic.setTextFill(Color.FLORALWHITE);
+        classic.setTextFill(screen.textColor);
         classic.setPadding(new Insets(10, 10, 10, 10));
 
         setButtonBrightness(classic, screen.color);

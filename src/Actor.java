@@ -2,7 +2,7 @@ import java.util.ArrayList;
 
 import javafx.scene.image.ImageView;
 
-public abstract class Actor extends ImageView{
+public abstract class Actor extends ImageView {
 
 	public abstract void act(long now);
 	
