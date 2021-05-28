@@ -1,6 +1,8 @@
 import javafx.scene.image.Image;
 import javafx.scene.input.KeyCode;
 
+import java.util.List;
+
 public class Ball extends Actor{
 	
 	private double dx;
@@ -11,6 +13,8 @@ public class Ball extends Actor{
 	public Ball() {
 		new Ball(2, 2);
 	}
+
+
 
 	public Ball(double x, double y) {
 		String path = getClass().getClassLoader().getResource("resources/ball.png").toString();
@@ -89,6 +93,27 @@ public class Ball extends Actor{
 			Score current = ((BallWorld)getWorld()).getScore();
 			current.setValue(current.getValue() + 100);
 		}
+		if (getOneIntersectingObject(MovingBrick.class) != null) {
+			Brick brick = getOneIntersectingObject(MovingBrick.class);
+			double brickX = brick.getX();
+			double brickY = brick.getY();
+			double brickWidth = brick.getWidth();
+			double brickHeight = brick.getHeight();
+
+			if (getX() >= brickX && getX() <= (brickX + brickWidth)) {
+				dy = -dy;
+			}else if (getY() >= brickY && getY() <= (brickY + brickHeight)) {
+				dx = -dx;
+			}else {
+				dx = -dx;
+				dy = -dy;
+			}
+			getWorld().remove(getOneIntersectingObject(MovingBrick.class));
+
+			Score current = ((BallWorld)getWorld()).getScore();
+			current.setValue(current.getValue() + 100);
+		}
+
 		
 		if (getX() < 0) {
 			dx = -dx;
@@ -100,11 +125,15 @@ public class Ball extends Actor{
 			dy = -dy;
 			setY(0);
 		} else if (getY() + (getWidth()) > getWorld().getHeight()) {
-			dy = -dy;
-			setY(getWorld().getHeight() - (getHeight()));
+			Paddle paddle = getWorld().getObjects(Paddle.class).get(0);
+
+			setX(paddle.getX() + paddle.getWidth()/2);
+			setY(paddle.getY() - getHeight() - 5);
+
+			dy = 2; dx = 3;
 
 			Score current = ((BallWorld)getWorld()).getScore();
-			current.setValue(current.getValue() - 1000);
+			current.setValue(current.getValue() - 300);
 		}		
 		
 	}

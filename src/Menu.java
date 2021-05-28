@@ -10,8 +10,7 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
+import javafx.scene.paint.*;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Screen;
@@ -45,6 +44,16 @@ public class Menu extends World {
     public static Menu getOpeningScreen(Stage stage) {
         Menu screen = new Menu();
         Level.setCloudTransition(screen);
+
+        Stop[] stops = {new Stop(0, Color.TRANSPARENT), new Stop(1, Color.rgb(120, 191, 255))};
+        LinearGradient grad = new LinearGradient(0, 0, 0, 1, true, CycleMethod.NO_CYCLE, stops);
+
+        Pane pane2 = new Pane();
+        pane2.setMinSize(700, 500);
+        pane2.setBackground(new Background(new BackgroundFill(grad, null, null)));
+
+        screen.getChildren().add(pane2);
+
         screen.start();
         screen.color = Color.rgb(120, 191, 255);
         screen.setPrefSize(700, 500);
@@ -90,6 +99,16 @@ public class Menu extends World {
     public static Menu getSelectionScreen(Stage stage, Menu prevMenu) {
         Menu screen = new Menu();
         Level.setCloudTransition(screen);
+
+        Stop[] stops = {new Stop(0, Color.TRANSPARENT), new Stop(1, Color.rgb(120, 191, 255))};
+        LinearGradient grad = new LinearGradient(0, 0, 0, 1, true, CycleMethod.NO_CYCLE, stops);
+
+        Pane pane2 = new Pane();
+        pane2.setMinSize(700, 500);
+        pane2.setBackground(new Background(new BackgroundFill(grad, null, null)));
+
+        screen.getChildren().add(pane2);
+
         screen.start();
 
         screen.color = Color.rgb(120, 191, 255);
@@ -118,6 +137,11 @@ public class Menu extends World {
         label.setTextFill(screen.textColor);
         label.setAlignment(Pos.TOP_CENTER);
 
+        HBox buttonPanel = new HBox();
+        buttonPanel.setSpacing(30);
+        buttonPanel.setAlignment(Pos.CENTER);
+
+
         Button classic = new Button("Classic Mode");
         classic.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(4), new Insets(8))));
         classic.setTextFill(screen.textColor);
@@ -129,13 +153,39 @@ public class Menu extends World {
             @Override
             public void handle(ActionEvent actionEvent) {
                 Level level = new Level("Simple Game", screen.getMenuScene());
-
+                level.initializeLevel(stage);
+                Button btn = getBackBtn(stage, screen.getMenuScene());
+                setButtonBrightness(btn, screen.color);
+                level.getWorld().getChildren().add(btn);
                 stage.setScene(level.getScene(stage));
                 stage.show();
             }
         });
 
-        box.getChildren().addAll(label, classic);
+        Button endless = new Button("Endless Mode");
+        endless.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(4), new Insets(8))));
+        endless.setTextFill(screen.textColor);
+        endless.setPadding(new Insets(10, 10, 10, 10));
+
+        setButtonBrightness(endless, screen.color);
+
+        endless.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                Level level = new Level("Simple Game", screen.getMenuScene());
+                level.endlessMode(stage);
+
+                Button btn = getBackBtn(stage, screen.getMenuScene());
+                setButtonBrightness(btn, screen.color);
+                level.getWorld().getChildren().add(btn);
+                stage.setScene(level.getScene(stage));
+                stage.show();
+            }
+        });
+
+        buttonPanel.getChildren().addAll(classic, endless);
+
+        box.getChildren().addAll(label, buttonPanel);
         pane.setCenter(box);
         pane.setLeft(backBtn);
 
@@ -160,8 +210,9 @@ public class Menu extends World {
         });
     }
 
-    static Button getBackBtn(Stage stage, Scene prevScene) {
+    public static Button getBackBtn(Stage stage, Scene prevScene) {
         Button btn = new Button("←");
+
         btn.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(4), new Insets(8))));
         btn.setPadding(new Insets(5, 10, 5, 10));
         btn.setTextFill(Color.FLORALWHITE);
