@@ -10,6 +10,7 @@ public abstract class World extends Pane {
 
 	private AnimationTimer timer;
 	private HashSet<KeyCode> keysDown;
+	private boolean isStopped;
 	
 	public World() {
 		keysDown = new HashSet<KeyCode>();
@@ -28,6 +29,7 @@ public abstract class World extends Pane {
 			}
 		
 		};
+		isStopped = true;
 	}
 	
 	public void keyDown(KeyCode keyCode) {
@@ -52,10 +54,16 @@ public abstract class World extends Pane {
 	
 	public void start() {
 		timer.start();
+		isStopped = false;
 	}
 	
 	public void stop() {
 		timer.stop();
+		isStopped = true;
+	}
+
+	public boolean isStopped() {
+		return isStopped;
 	}
 	
 	public <A extends Actor> java.util.List<A> getObjects(java.lang.Class<A> cls){

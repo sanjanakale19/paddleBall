@@ -1,3 +1,4 @@
+import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
@@ -7,12 +8,14 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
+import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.*;
 import javafx.scene.paint.*;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
+import javafx.scene.transform.Rotate;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
@@ -22,6 +25,7 @@ public class Menu extends World {
     private BorderPane rootNode;
     private Color color;
     private Color textColor;
+    private static final BorderPane pausePane = new BorderPane();
 
     public Menu() {
         rootNode = new BorderPane();
@@ -153,6 +157,13 @@ public class Menu extends World {
             @Override
             public void handle(ActionEvent actionEvent) {
                 Level level = new Level("Simple Game", screen.getMenuScene());
+                BorderPane pane = new BorderPane();
+
+                pane.setRight(getPauseBtn(level, screen.color));
+                pane.setMinSize(700, 500);
+                pane.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, null, null)));
+
+                level.getWorld().getChildren().add(pane);
                 level.initializeLevel(stage);
                 Button btn = getBackBtn(stage, screen.getMenuScene());
                 setButtonBrightness(btn, screen.color);
@@ -232,4 +243,136 @@ public class Menu extends World {
         return btn;
     }
 
+    public static Button getPauseBtn(Level level, Color background) {
+        Button btn = new Button();
+        ImageView pauseGraphic = new ImageView("resources/pause.png");
+        pauseGraphic.setFitWidth(25); pauseGraphic.setFitHeight(25);
+        btn.setGraphic(pauseGraphic);
+//        Rotate rot = new Rotate(90, Rotate.Z_AXIS);
+//        btn.getTransforms().add(rot);
+        btn.setMinSize(14.14213562,  14.14213562);
+
+        btn.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(20), null)));
+        btn.setAlignment(Pos.TOP_RIGHT);
+        btn.setPadding(new Insets(5, 10, 5, 10));
+        btn.setTextFill(Color.FLORALWHITE);
+        btn.setTooltip(new Tooltip("PAUSE"));
+        btn.getTooltip().setFont(new Font("", 10));
+        btn.setFont(new Font("", 20));
+
+        setButtonBrightness(btn, background);
+
+        pausePane.setPrefSize(level.getWidth(), level.getHeight());
+        Color c = background.desaturate();
+        pausePane.setBackground(new Background(new BackgroundFill(Color.rgb((int)c.getRed(), (int)c.getGreen(), (int)c.getBlue(), 0.5), null, null)));
+
+        Label pause = new Label("~ PAUSED ~");
+        pause.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, null, null)));
+        pause.setFont(new Font("", 50));
+        pause.setTextFill(Color.FLORALWHITE);
+
+
+        btn.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                level.getWorld().stop();
+                level.getWorld().getChildren().remove(btn);
+
+                Button playBtn = getPlayBtn(level, btn, pausePane, background);
+
+                pausePane.setRight(playBtn);
+                pausePane.setCenter(pause);
+
+                level.getWorld().getChildren().add(pausePane);
+            }
+        });
+
+        return btn;
+    }
+
+    public static Button getPlayBtn(Level level, Button pause, BorderPane pausePane, Color background) {
+        Button btn = new Button();
+        ImageView play = new ImageView("resources/play.png");
+        play.setFitHeight(25); play.setFitWidth(25);
+        btn.setGraphic(play);
+
+        btn.setMaxSize(20, 20);
+//        Rotate rot = new Rotate(90, Rotate.Z_AXIS);
+//        btn.getTransforms().add(rot);
+
+        btn.setPrefWidth(14.14213562); btn.setPrefHeight(14.14213562);
+        btn.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(20), null)));
+        btn.setAlignment(Pos.TOP_RIGHT);
+
+        setButtonBrightness(btn, background);
+
+        btn.setPadding(new Insets(5, 10, 5, 10));
+        btn.setTextFill(Color.FLORALWHITE);
+        btn.setTooltip(new Tooltip("RESUME"));
+        btn.getTooltip().setFont(new Font("", 10));
+        btn.setFont(new Font("", 20));
+
+
+
+        Label resume = new Label("RESUME IN");
+        resume.setFont(new Font("", 20));
+        resume.setTextFill(Color.FLORALWHITE);
+        resume.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, null, null)));
+
+        Label count = new Label("");
+        count.setTextFill(Color.FLORALWHITE);
+        count.setFont(new Font("", 50));
+        count.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, null, null)));
+        count.setText("HELLO");
+
+
+        btn.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                VBox box = new VBox();
+                box.setAlignment(Pos.CENTER);
+                box.setSpacing(25);
+
+                box.getChildren().addAll(resume, count);
+                pausePane.setCenter(box);
+
+
+                // to be run on background thread
+                Runnable r = new Runnable() {
+                    @Override
+                    public void run() {
+                        int i = 3;
+                        try {
+                            while (i >= 0) {
+                                int finalI = i;
+                                // the following to be run on main (UI) thread
+                                Platform.runLater(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        count.setText(finalI + "");
+                                        if (finalI == 0) {
+                                            level.getWorld().getChildren().remove(pausePane);
+                                            level.getWorld().start();
+                                            level.getWorld().getChildren().add(pause);
+                                            level.getWorld().requestFocus();
+                                        }
+                                    }
+                                });
+                                Thread.sleep(1000);
+                                i--;
+                            }
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                };
+                Thread thread = new Thread(r);
+                thread.start();
+            }
+        });
+
+
+        return btn;
+
+    }
 }

@@ -15,6 +15,8 @@ import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.Stop;
 import javafx.stage.Stage;
 
+import java.io.Console;
+
 public class Level {
     private String name;
     private BorderPane rootNode;
@@ -39,6 +41,14 @@ public class Level {
         return world;
     }
 
+    public double getWidth() {
+        return width;
+    }
+
+    public double getHeight() {
+        return height;
+    }
+
     public Scene getPrevScene() {
         return prevScene;
     }
@@ -59,7 +69,6 @@ public class Level {
         world.getChildren().add(paddle);
 
 
-        Button btn = Menu.getBackBtn(stage, prevScene);
 //
 //        btn.setVisible(true);
 //        world.getChildren().add(btn);
@@ -93,9 +102,12 @@ public class Level {
         Stop[] stops = {new Stop(0, Color.TRANSPARENT), new Stop(1, Color.rgb(120, 191, 255))};
         LinearGradient grad = new LinearGradient(0, 0, 0, 1, true, CycleMethod.NO_CYCLE, stops);
 
-        Pane pane = new Pane();
+        BorderPane pane = new BorderPane();
         pane.setMinSize(width, height);
         pane.setBackground(new Background(new BackgroundFill(grad, null, null)));
+
+        Button pause = Menu.getPauseBtn(this, Color.rgb(120, 191, 255));
+        pane.setRight(pause);
 
         world.getChildren().add(pane);
 
@@ -104,8 +116,11 @@ public class Level {
         AnimationTimer timer = new AnimationTimer() {
             @Override
             public void handle(long l) {
-                if (l * 10e9 % 100 == 0) {
-                    generateBrickRow();
+                if (!world.isStopped()) {
+                    if (l * 10e9 % 100 == 0) {
+                        generateBrickRow();
+
+                    }
                 }
             }
         };
