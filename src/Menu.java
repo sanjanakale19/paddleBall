@@ -26,6 +26,7 @@ public class Menu extends World {
     private Color color;
     private Color textColor;
     private static final BorderPane pausePane = new BorderPane();
+    private static Level[] classicLevels;
 
     public Menu() {
         rootNode = new BorderPane();
@@ -46,23 +47,17 @@ public class Menu extends World {
     }
 
     public static Menu getOpeningScreen(Stage stage) {
+        classicLevels = Level.getClassicLevels(stage);
+
         Menu screen = new Menu();
         Level.setCloudTransition(screen);
 
-        Stop[] stops = {new Stop(0, Color.TRANSPARENT), new Stop(1, Color.rgb(120, 191, 255))};
-        LinearGradient grad = new LinearGradient(0, 0, 0, 1, true, CycleMethod.NO_CYCLE, stops);
-
-        Pane pane2 = new Pane();
-        pane2.setMinSize(700, 500);
-        pane2.setBackground(new Background(new BackgroundFill(grad, null, null)));
-
-        screen.getChildren().add(pane2);
-
-        screen.start();
         screen.color = Color.rgb(120, 191, 255);
-        screen.setPrefSize(700, 500);
-        screen.setBackground(new Background(new BackgroundFill(screen.color, null, null)));
 
+//        // kinda don't need to comment this but the result looks cool so i'm keeping it
+//        screen.setBackground(new Background(new BackgroundFill(screen.color, null, null)));
+
+        screen.setPrefSize(700, 500);
         VBox box = new VBox();
         box.setAlignment(Pos.CENTER);
         box.setPrefSize(700, 500);
@@ -101,19 +96,11 @@ public class Menu extends World {
     }
 
     public static Menu getSelectionScreen(Stage stage, Menu prevMenu) {
+
+
         Menu screen = new Menu();
         Level.setCloudTransition(screen);
 
-        Stop[] stops = {new Stop(0, Color.TRANSPARENT), new Stop(1, Color.rgb(120, 191, 255))};
-        LinearGradient grad = new LinearGradient(0, 0, 0, 1, true, CycleMethod.NO_CYCLE, stops);
-
-        Pane pane2 = new Pane();
-        pane2.setMinSize(700, 500);
-        pane2.setBackground(new Background(new BackgroundFill(grad, null, null)));
-
-        screen.getChildren().add(pane2);
-
-        screen.start();
 
         screen.color = Color.rgb(120, 191, 255);
         screen.prevScene = prevMenu.getMenuScene();
@@ -128,6 +115,14 @@ public class Menu extends World {
 
         Button backBtn = getBackBtn(stage, prevMenu.getMenuScene());
         setButtonBrightness(backBtn, screen.color);
+
+        Button home = getHomeBtn(stage);
+        setButtonBrightness(home, screen.color);
+
+        HBox box1 = new HBox();
+        box1.setSpacing(1);
+
+        box1.getChildren().addAll(backBtn, home);
 
 
         VBox box = new VBox();
@@ -156,18 +151,8 @@ public class Menu extends World {
         classic.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-                Level level = new Level("Simple Game", screen.getMenuScene());
-                BorderPane pane = new BorderPane();
+                Level level = classicLevels[0];
 
-                pane.setRight(getPauseBtn(level, screen.color));
-                pane.setMinSize(700, 500);
-                pane.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, null, null)));
-
-                level.getWorld().getChildren().add(pane);
-                level.initializeLevel(stage);
-                Button btn = getBackBtn(stage, screen.getMenuScene());
-                setButtonBrightness(btn, screen.color);
-                level.getWorld().getChildren().add(btn);
                 stage.setScene(level.getScene(stage));
                 stage.show();
             }
@@ -186,6 +171,8 @@ public class Menu extends World {
                 Level level = new Level("Simple Game", screen.getMenuScene());
                 level.endlessMode(stage);
 
+
+
                 Button btn = getBackBtn(stage, screen.getMenuScene());
                 setButtonBrightness(btn, screen.color);
                 level.getWorld().getChildren().add(btn);
@@ -198,7 +185,7 @@ public class Menu extends World {
 
         box.getChildren().addAll(label, buttonPanel);
         pane.setCenter(box);
-        pane.setLeft(backBtn);
+        pane.setLeft(box1);
 
         screen.getChildren().addAll(pane);
 
@@ -239,6 +226,33 @@ public class Menu extends World {
                 stage.show();
             }
         });
+
+        return btn;
+    }
+
+    public static Button getHomeBtn(Stage stage) {
+        Button btn = new Button();
+        ImageView home = new ImageView("resources/home graphic.png");
+        home.setFitHeight(18); home.setFitWidth(18);
+        btn.setGraphic(home);
+
+
+        btn.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(4), new Insets(8))));
+        btn.setPadding(new Insets(5, 10, 5, 10));
+        btn.setTextFill(Color.FLORALWHITE);
+        btn.setTooltip(new Tooltip("HOME"));
+        btn.getTooltip().setFont(new Font("", 10));
+        btn.setFont(new Font("", 20));
+
+        btn.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                Menu menu = getOpeningScreen(stage);
+                stage.setScene(menu.getMenuScene());
+                stage.show();
+            }
+        });
+
 
         return btn;
     }
@@ -375,4 +389,106 @@ public class Menu extends World {
         return btn;
 
     }
+
+    public static Button getSelectionBtn(Stage stage) {
+        Button btn = new Button();
+        ImageView img = new ImageView("resources/selection.png");
+        img.setFitWidth(25); img.setFitHeight(25);
+        btn.setGraphic(img);
+
+        btn.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(4), new Insets(8))));
+        btn.setPadding(new Insets(5, 10, 5, 10));
+        btn.setTooltip(new Tooltip("LEVEL SELECT"));
+        btn.getTooltip().setFont(new Font("", 10));
+        btn.setFont(new Font("", 20));
+
+        btn.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+                stage.setScene(getLevelSelect(stage));
+            }
+        });
+
+        return btn;
+
+    }
+
+    static Scene getLevelSelect(Stage stage) {
+        Menu screen = new Menu();
+        Level.setCloudTransition(screen);
+        screen.setBackground(new Background(new BackgroundFill(Color.rgb(120, 191, 255), null, null)));
+
+
+        screen.setPrefSize(700, 500);
+        BorderPane pane = new BorderPane();
+        pane.setPadding(new Insets(30));
+        pane.setPrefSize(700, 500);
+
+
+
+        Button backBtn = getBackBtn(stage, getSelectionScreen(stage, getOpeningScreen(stage)).getMenuScene());
+        setButtonBrightness(backBtn, screen.color);
+
+        Button home = getHomeBtn(stage);
+        setButtonBrightness(home, screen.color);
+
+        HBox box1 = new HBox();
+        box1.setSpacing(1);
+
+        box1.getChildren().addAll(backBtn, home);
+
+
+        VBox box = new VBox();
+        box.setAlignment(Pos.CENTER);
+        box.setPrefSize(200, 200);
+        box.setSpacing(70);
+
+        Label label = new Label("Select a level");
+        label.setVisible(true);
+        label.setFont(new Font("", 30));
+        label.setTextFill(screen.textColor);
+        label.setAlignment(Pos.TOP_CENTER);
+
+        HBox buttonPanel = new HBox();
+        buttonPanel.setSpacing(30);
+        buttonPanel.setAlignment(Pos.CENTER);
+
+        Button[] levels = new Button[classicLevels.length];
+
+        for (int i = 0; i < levels.length; i++) {
+            levels[i] = new Button();
+            ImageView img = new ImageView("resources/" + (i + 1) + ".png");
+            img.setFitWidth(25); img.setFitHeight(25);
+            levels[i].setGraphic(img);
+
+            levels[i].setPadding(new Insets(5, 10, 5, 10));
+            levels[i].setTooltip(new Tooltip("LEVEL_" + (i+1)));
+            levels[i].getTooltip().setFont(new Font("", 10));
+
+            setButtonBrightness(levels[i], screen.color);
+
+            int finalI = i;
+            levels[i].setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent actionEvent) {
+                    Scene scene = classicLevels[finalI].getScene(stage);
+                    stage.setScene(scene);
+                    stage.show();
+                }
+            });
+
+        }
+
+
+        buttonPanel.getChildren().addAll(levels);
+
+        box.getChildren().addAll(label, buttonPanel);
+        pane.setCenter(box);
+        pane.setLeft(box1);
+
+        screen.getChildren().addAll(pane);
+
+        return screen.getScene();
+    }
+
 }

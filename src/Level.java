@@ -5,10 +5,7 @@ import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundFill;
-import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.Pane;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.LinearGradient;
@@ -99,12 +96,8 @@ public class Level {
     public void endlessMode(Stage stage) {
         Level.setCloudTransition(world);
 
-        Stop[] stops = {new Stop(0, Color.TRANSPARENT), new Stop(1, Color.rgb(120, 191, 255))};
-        LinearGradient grad = new LinearGradient(0, 0, 0, 1, true, CycleMethod.NO_CYCLE, stops);
-
         BorderPane pane = new BorderPane();
         pane.setMinSize(width, height);
-        pane.setBackground(new Background(new BackgroundFill(grad, null, null)));
 
         Button pause = Menu.getPauseBtn(this, Color.rgb(120, 191, 255));
         pane.setRight(pause);
@@ -178,6 +171,51 @@ public class Level {
 
         world.getChildren().addAll(cloudScreen1, cloudScreen2);
 
+
+        Stop[] stops = {new Stop(0, Color.TRANSPARENT), new Stop(1, Color.rgb(120, 191, 255))};
+        LinearGradient grad = new LinearGradient(0, 0, 0, 1, true, CycleMethod.NO_CYCLE, stops);
+
+        Pane pane2 = new Pane();
+        pane2.setMinSize(700, 500);
+        pane2.setBackground(new Background(new BackgroundFill(grad, null, null)));
+
+        world.getChildren().add(pane2);
+
+        world.start();
+    }
+
+    public static Level[] getClassicLevels(Stage stage) {
+        Level[] levels = new Level[5];
+
+        for (int i = 0; i < levels.length; i++) {
+
+
+            levels[i] = new Level("Level " + (i+1), null);
+            BorderPane pane = new BorderPane();
+            Level lvl = levels[i];
+
+            pane.setRight(Menu.getPauseBtn(lvl, Color.rgb(120, 191, 255)));
+            pane.setMinSize(700, 500);
+            pane.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, null, null)));
+
+            lvl.getWorld().getChildren().add(pane);
+            lvl.initializeLevel(stage);
+            Button btn = Menu.getSelectionBtn(stage);
+            Menu.setButtonBrightness(btn, Color.rgb(120, 191, 255));
+
+            Button btn2 = Menu.getHomeBtn(stage);
+            Menu.setButtonBrightness(btn2, Color.rgb(120, 191, 255));
+
+            HBox box = new HBox();
+            box.setSpacing(5);
+            box.getChildren().addAll(btn, btn2);
+
+
+            lvl.getWorld().getChildren().add(box);
+        }
+
+
+        return levels;
     }
 
 
