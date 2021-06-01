@@ -2,6 +2,7 @@ import javafx.animation.AnimationTimer;
 import javafx.event.EventHandler;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.KeyEvent;
@@ -99,7 +100,7 @@ public class Level {
         BorderPane pane = new BorderPane();
         pane.setMinSize(width, height);
 
-        Button pause = Menu.getPauseBtn(this, Color.rgb(120, 191, 255));
+        Button pause = Menu.getPauseBtn(stage, this, Color.rgb(120, 191, 255), false);
         pane.setRight(pause);
 
         world.getChildren().add(pane);
@@ -124,7 +125,7 @@ public class Level {
     }
 
     void generateBrickRow() {
-        MovingBrick brick = new MovingBrick();
+        MovingBrick brick = new MovingBrick(0, 2);
 
         double randX = (Math.random() * (width - brick.getWidth()));
 
@@ -189,27 +190,51 @@ public class Level {
 
         for (int i = 0; i < levels.length; i++) {
 
-
             levels[i] = new Level("Level " + (i+1), null);
             BorderPane pane = new BorderPane();
             Level lvl = levels[i];
 
-            pane.setRight(Menu.getPauseBtn(lvl, Color.rgb(120, 191, 255)));
+            pane.setRight(Menu.getPauseBtn(stage, lvl, Color.rgb(120, 191, 255), true));
             pane.setMinSize(700, 500);
             pane.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, null, null)));
 
             lvl.getWorld().getChildren().add(pane);
             lvl.initializeLevel(stage);
-            Button btn = Menu.getSelectionBtn(stage);
-            Menu.setButtonBrightness(btn, Color.rgb(120, 191, 255));
 
-            Button btn2 = Menu.getHomeBtn(stage);
-            Menu.setButtonBrightness(btn2, Color.rgb(120, 191, 255));
+            HBox box = Menu.getBtnPanel2(stage, true);
 
-            HBox box = new HBox();
-            box.setSpacing(5);
-            box.getChildren().addAll(btn, btn2);
 
+            lvl.getWorld().getChildren().add(box);
+        }
+
+        Level lvl = levels[0];
+        Brick b = new MovingBrick(0, 0);
+        b.setX(100); b.setY(100);
+
+        lvl.getWorld().add(b);
+
+        return levels;
+    }
+
+    public static Level[] getEndlessLevels(Stage stage) {
+        Level[] levels = new Level[2];
+
+        for (int i = 0; i < levels.length; i++) {
+
+            levels[i] = new Level(i == 0 ? "Timed Mode" : "Peaceful Mode", null);
+            Level lvl = levels[i];
+
+            BorderPane pane = new BorderPane();
+            lvl.endlessMode(stage);
+
+            pane.setRight(Menu.getPauseBtn(stage, lvl, Color.rgb(120, 191, 255), false));
+            pane.setMinSize(700, 500);
+            pane.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, null, null)));
+
+            lvl.getWorld().getChildren().add(pane);
+
+
+            HBox box = Menu.getBtnPanel2(stage, false);
 
             lvl.getWorld().getChildren().add(box);
         }

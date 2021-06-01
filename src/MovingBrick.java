@@ -1,7 +1,11 @@
 public class MovingBrick extends Brick {
+    private int dx;
+    private int dy;
 
-    MovingBrick() {
+    MovingBrick(int dx, int dy) {
         super();
+        this.dx = dx;
+        this.dy = dy;
     }
 
     @Override
@@ -9,7 +13,7 @@ public class MovingBrick extends Brick {
         if (getY() >= 400 - getHeight()) {
             getWorld().remove(this);
         }
-        move(0, 2);
+        move(dx, dy);
 
     }
 

@@ -13,6 +13,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.*;
 import javafx.scene.paint.*;
+import javafx.scene.shape.Box;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Rotate;
@@ -23,7 +24,7 @@ public class Menu extends World {
     private Scene scene;
     private Scene prevScene;
     private BorderPane rootNode;
-    private Color color;
+    private static Color color;
     private Color textColor;
     private static final BorderPane pausePane = new BorderPane();
     private static Level[] classicLevels;
@@ -33,7 +34,7 @@ public class Menu extends World {
         scene = new Scene(rootNode);
         rootNode.setCenter(this);
         prevScene = null;
-        color = Color.WHITE;
+        color = Color.rgb(120, 191, 255);
         textColor = Color.ROYALBLUE;
     }
 
@@ -52,7 +53,7 @@ public class Menu extends World {
         Menu screen = new Menu();
         Level.setCloudTransition(screen);
 
-        screen.color = Color.rgb(120, 191, 255);
+
 
 //        // kinda don't need to comment this but the result looks cool so i'm keeping it
 //        screen.setBackground(new Background(new BackgroundFill(screen.color, null, null)));
@@ -168,14 +169,7 @@ public class Menu extends World {
         endless.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-                Level level = new Level("Simple Game", screen.getMenuScene());
-                level.endlessMode(stage);
-
-
-
-                Button btn = getBackBtn(stage, screen.getMenuScene());
-                setButtonBrightness(btn, screen.color);
-                level.getWorld().getChildren().add(btn);
+                Level level = Level.getEndlessLevels(stage)[0];
                 stage.setScene(level.getScene(stage));
                 stage.show();
             }
@@ -257,13 +251,12 @@ public class Menu extends World {
         return btn;
     }
 
-    public static Button getPauseBtn(Level level, Color background) {
+    public static Button getPauseBtn(Stage stage, Level level, Color background, boolean isClassic) {
         Button btn = new Button();
         ImageView pauseGraphic = new ImageView("resources/pause.png");
         pauseGraphic.setFitWidth(25); pauseGraphic.setFitHeight(25);
         btn.setGraphic(pauseGraphic);
-//        Rotate rot = new Rotate(90, Rotate.Z_AXIS);
-//        btn.getTransforms().add(rot);
+
         btn.setMinSize(14.14213562,  14.14213562);
 
         btn.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(20), null)));
@@ -280,7 +273,7 @@ public class Menu extends World {
         Color c = background.desaturate();
         pausePane.setBackground(new Background(new BackgroundFill(Color.rgb((int)c.getRed(), (int)c.getGreen(), (int)c.getBlue(), 0.5), null, null)));
 
-        Label pause = new Label("~ PAUSED ~");
+        Label pause = new Label("PAUSED");
         pause.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, null, null)));
         pause.setFont(new Font("", 50));
         pause.setTextFill(Color.FLORALWHITE);
@@ -293,7 +286,9 @@ public class Menu extends World {
                 level.getWorld().getChildren().remove(btn);
 
                 Button playBtn = getPlayBtn(level, btn, pausePane, background);
+                HBox box = getBtnPanel2(stage, isClassic);
 
+                pausePane.setLeft(box);
                 pausePane.setRight(playBtn);
                 pausePane.setCenter(pause);
 
@@ -390,7 +385,7 @@ public class Menu extends World {
 
     }
 
-    public static Button getSelectionBtn(Stage stage) {
+    public static Button getSelectionBtn(Stage stage, boolean isClassic) {
         Button btn = new Button();
         ImageView img = new ImageView("resources/selection.png");
         img.setFitWidth(25); img.setFitHeight(25);
@@ -405,7 +400,7 @@ public class Menu extends World {
         btn.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-                stage.setScene(getLevelSelect(stage));
+                stage.setScene(getLevelSelect(stage, isClassic));
             }
         });
 
@@ -413,7 +408,7 @@ public class Menu extends World {
 
     }
 
-    static Scene getLevelSelect(Stage stage) {
+    static Scene getLevelSelect(Stage stage, boolean isClassic) {
         Menu screen = new Menu();
         Level.setCloudTransition(screen);
         screen.setBackground(new Background(new BackgroundFill(Color.rgb(120, 191, 255), null, null)));
@@ -425,17 +420,7 @@ public class Menu extends World {
         pane.setPrefSize(700, 500);
 
 
-
-        Button backBtn = getBackBtn(stage, getSelectionScreen(stage, getOpeningScreen(stage)).getMenuScene());
-        setButtonBrightness(backBtn, screen.color);
-
-        Button home = getHomeBtn(stage);
-        setButtonBrightness(home, screen.color);
-
-        HBox box1 = new HBox();
-        box1.setSpacing(1);
-
-        box1.getChildren().addAll(backBtn, home);
+        HBox box1 = getBtnPanel1(stage, getSelectionScreen(stage, getOpeningScreen(stage)));
 
 
         VBox box = new VBox();
@@ -453,34 +438,65 @@ public class Menu extends World {
         buttonPanel.setSpacing(30);
         buttonPanel.setAlignment(Pos.CENTER);
 
-        Button[] levels = new Button[classicLevels.length];
+        Button[] btns;
 
-        for (int i = 0; i < levels.length; i++) {
-            levels[i] = new Button();
-            ImageView img = new ImageView("resources/" + (i + 1) + ".png");
-            img.setFitWidth(25); img.setFitHeight(25);
-            levels[i].setGraphic(img);
+        if (isClassic) {
+            btns = new Button[classicLevels.length];
 
-            levels[i].setPadding(new Insets(5, 10, 5, 10));
-            levels[i].setTooltip(new Tooltip("LEVEL_" + (i+1)));
-            levels[i].getTooltip().setFont(new Font("", 10));
+            for (int i = 0; i < btns.length; i++) {
+                btns[i] = new Button((i + 1) + "");
+                btns[i].setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(4), new Insets(15))));
+                btns[i].setTextFill(Color.ROYALBLUE);
+                btns[i].setFont(new Font("", 25));
 
-            setButtonBrightness(levels[i], screen.color);
+                btns[i].setPadding(new Insets(5, 10, 5, 10));
+                btns[i].setTooltip(new Tooltip("LEVEL_" + (i + 1)));
+                btns[i].getTooltip().setFont(new Font("", 10));
 
-            int finalI = i;
-            levels[i].setOnAction(new EventHandler<ActionEvent>() {
-                @Override
-                public void handle(ActionEvent actionEvent) {
-                    Scene scene = classicLevels[finalI].getScene(stage);
-                    stage.setScene(scene);
-                    stage.show();
-                }
-            });
+                setButtonBrightness(btns[i], Menu.color);
 
+                int finalI = i;
+                btns[i].setOnAction(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent actionEvent) {
+                        Level level = Level.getClassicLevels(stage)[finalI];
+                        stage.setScene(level.getScene(stage));
+                        stage.show();
+                    }
+                });
+
+            }
+
+        } else {
+            Level[] levels = Level.getEndlessLevels(stage);
+            btns = new Button[levels.length];
+
+            for (int i = 0; i < btns.length; i++) {
+                btns[i] = new Button(i == 0 ? "Timed Mode" : "Peaceful Mode");
+                btns[i].setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(4), new Insets(8))));
+                btns[i].setTextFill(Color.ROYALBLUE);
+
+                btns[i].setPadding(new Insets(5, 10, 5, 10));
+                btns[i].setTooltip(new Tooltip(i == 0 ? "timed_endless" : "peaceful_endless"));
+                btns[i].getTooltip().setFont(new Font("", 10));
+
+                setButtonBrightness(btns[i], Menu.color);
+
+                int finalI = i;
+                btns[i].setOnAction(new EventHandler<ActionEvent>() {
+                    @Override
+                    public void handle(ActionEvent actionEvent) {
+                        Level level = Level.getEndlessLevels(stage)[0];
+                        stage.setScene(level.getScene(stage));
+                        stage.show();
+                    }
+                });
+
+            }
         }
 
 
-        buttonPanel.getChildren().addAll(levels);
+        buttonPanel.getChildren().addAll(btns);
 
         box.getChildren().addAll(label, buttonPanel);
         pane.setCenter(box);
@@ -489,6 +505,78 @@ public class Menu extends World {
         screen.getChildren().addAll(pane);
 
         return screen.getScene();
+    }
+
+    // panel 1 = back btn + home btn
+    public static HBox getBtnPanel1(Stage stage, Menu prev) {
+        Button backBtn = getBackBtn(stage, prev.getMenuScene());
+        setButtonBrightness(backBtn, Menu.color);
+
+        Button home = getHomeBtn(stage);
+        setButtonBrightness(home, Menu.color);
+
+        HBox box1 = new HBox();
+        box1.setSpacing(1);
+
+        box1.getChildren().addAll(backBtn, home);
+
+        return box1;
+    }
+
+    // panel 2 = level selection btn + home btn
+    public static HBox getBtnPanel2(Stage stage, boolean isClassic) {
+        Button btn = Menu.getSelectionBtn(stage, isClassic);
+        Menu.setButtonBrightness(btn, Color.rgb(120, 191, 255));
+
+        Button btn2 = Menu.getHomeBtn(stage);
+        Menu.setButtonBrightness(btn2, Color.rgb(120, 191, 255));
+
+        HBox box = new HBox();
+        box.setSpacing(5);
+        box.getChildren().addAll(btn, btn2);
+
+        return box;
+    }
+
+    public static Scene getLevelCleared() {
+        Menu menu = new Menu();
+        BorderPane pane = new BorderPane();
+        Level.setCloudTransition(menu);
+
+        Label clear = new Label("Level Cleared!");
+        clear.setFont(new Font("", 60));
+        clear.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, null, null)));
+        clear.setTextFill(Color.ROYALBLUE);
+        pane.setCenter(clear);
+
+        menu.getChildren().add(pane);
+        return menu.getMenuScene();
+
+    }
+
+    public static Scene getScoreCount(Score score) {
+        Menu menu = new Menu();
+        BorderPane pane = new BorderPane();
+        Level.setCloudTransition(menu);
+
+        VBox box = new VBox();
+        box.setAlignment(Pos.CENTER);
+        box.setSpacing(20);
+        Label text = new Label("Your Score:");
+        Label myScore = new Label(score.getValue() + "");
+
+        text.setFont(new Font("", 60));
+        myScore.setFont(new Font("", 100));
+        text.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, null, null)));
+        text.setTextFill(Color.ROYALBLUE);
+        myScore.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, null, null)));
+        myScore.setTextFill(Color.ROYALBLUE);
+
+        box.getChildren().addAll(text, myScore);
+        pane.setCenter(box);
+
+        menu.getChildren().add(pane);
+        return menu.getMenuScene();
     }
 
 }
