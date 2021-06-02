@@ -1,3 +1,4 @@
+import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -19,6 +20,8 @@ import javafx.scene.text.Text;
 import javafx.scene.transform.Rotate;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
+
+import java.util.Timer;
 
 public class Menu extends World {
     private Scene scene;
@@ -152,9 +155,9 @@ public class Menu extends World {
         classic.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-                Level level = classicLevels[0];
+                Scene scene = getLevelSelect(stage, true);
 
-                stage.setScene(level.getScene(stage));
+                stage.setScene(scene);
                 stage.show();
             }
         });
@@ -169,8 +172,9 @@ public class Menu extends World {
         endless.setOnAction(new EventHandler<ActionEvent>() {
             @Override
             public void handle(ActionEvent actionEvent) {
-                Level level = Level.getEndlessLevels(stage)[0];
-                stage.setScene(level.getScene(stage));
+//                Level level = Level.getEndlessLevels(stage)[0];
+                Scene scene = getLevelSelect(stage, false);
+                stage.setScene(scene);
                 stage.show();
             }
         });
@@ -283,23 +287,31 @@ public class Menu extends World {
             @Override
             public void handle(ActionEvent actionEvent) {
                 level.getWorld().stop();
-                level.getWorld().getChildren().remove(btn);
 
-                Button playBtn = getPlayBtn(level, btn, pausePane, background);
                 HBox box = getBtnPanel2(stage, isClassic);
 
+                HBox box1 = new HBox();
+
+                Button quit = getQuitBtn(level.getWorld(), stage);
+                setButtonBrightness(quit, Color.rgb(120, 191, 255));
+                Button playBtn = getPlayBtn(level, stage, btn, pausePane, background, isClassic);
+                setButtonBrightness(playBtn, Color.rgb(120, 191, 255));
+
+                box1.getChildren().addAll(quit, playBtn);
+
                 pausePane.setLeft(box);
-                pausePane.setRight(playBtn);
+                pausePane.setRight(box1);
                 pausePane.setCenter(pause);
 
                 level.getWorld().getChildren().add(pausePane);
+                level.getWorld().getChildren().remove(btn);
             }
         });
 
         return btn;
     }
 
-    public static Button getPlayBtn(Level level, Button pause, BorderPane pausePane, Color background) {
+    public static Button getPlayBtn(Level level, Stage stage, Button pause, BorderPane pausePane, Color background, boolean isClassic) {
         Button btn = new Button();
         ImageView play = new ImageView("resources/play.png");
         play.setFitHeight(25); play.setFitWidth(25);
@@ -345,7 +357,6 @@ public class Menu extends World {
                 box.getChildren().addAll(resume, count);
                 pausePane.setCenter(box);
 
-
                 // to be run on background thread
                 Runnable r = new Runnable() {
                     @Override
@@ -362,7 +373,7 @@ public class Menu extends World {
                                         if (finalI == 0) {
                                             level.getWorld().getChildren().remove(pausePane);
                                             level.getWorld().start();
-                                            level.getWorld().getChildren().add(pause);
+                                            level.getWorld().getChildren().add(getBtnPanel2(stage, isClassic));
                                             level.getWorld().requestFocus();
                                         }
                                     }
@@ -459,8 +470,73 @@ public class Menu extends World {
                 btns[i].setOnAction(new EventHandler<ActionEvent>() {
                     @Override
                     public void handle(ActionEvent actionEvent) {
-                        Level level = Level.getClassicLevels(stage)[finalI];
-                        stage.setScene(level.getScene(stage));
+                        Level lvl = Level.getClassicLevels(stage)[finalI];
+
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                while (true) {
+                                    if (lvl.getWorld().getObjects(MovingBrick.class).size() == 0) {
+                                        // the following to be run on main (UI) thread
+                                        Platform.runLater(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                lvl.getWorld().stop();
+
+                                                stage.setScene(Menu.getLevelCleared());
+                                                stage.show();
+                                            }
+                                        });
+
+                                        try {
+                                            Thread.sleep(2000);
+                                        } catch (Exception e) {
+                                            e.printStackTrace();
+                                        }
+
+                                        // the following to be run on main (UI) thread
+                                        Platform.runLater(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                stage.setScene(Menu.getScoreCount(stage, ((BallWorld) lvl.getWorld()).getScore()));
+                                                stage.show();
+                                            }
+                                        });
+
+                                        break;
+                                    }
+                                    try {
+                                        Thread.sleep(20);
+                                    } catch (InterruptedException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            }
+                        }).start();
+//                        AnimationTimer levelCleared = new AnimationTimer() {
+//                            @Override
+//                            public void handle(long l) {
+//                                if (lvl.getWorld().getObjects(MovingBrick.class).size() == 0) {
+//                                    lvl.getWorld().stop();
+//
+//                                    stage.setScene(Menu.getLevelCleared());
+//                                    stage.show();
+//                                    try {
+//                                        Thread.sleep(2000);
+//                                    } catch (Exception e) {
+//                                        e.printStackTrace();
+//                                    }
+//
+//                                    stage.setScene(Menu.getScoreCount(stage, ((BallWorld)lvl.getWorld()).getScore()));
+//                                    stage.show();
+//                                    System.out.print("worked ");
+//                                    this.stop();
+//                                }
+//                            }
+//                        };
+//                        levelCleared.start();
+
+                        stage.setScene(lvl.getScene(stage));
                         stage.show();
                     }
                 });
@@ -481,18 +557,73 @@ public class Menu extends World {
                 btns[i].getTooltip().setFont(new Font("", 10));
 
                 setButtonBrightness(btns[i], Menu.color);
-
-                int finalI = i;
-                btns[i].setOnAction(new EventHandler<ActionEvent>() {
-                    @Override
-                    public void handle(ActionEvent actionEvent) {
-                        Level level = Level.getEndlessLevels(stage)[0];
-                        stage.setScene(level.getScene(stage));
-                        stage.show();
-                    }
-                });
-
             }
+
+            btns[1].setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent actionEvent) {
+                    Level level = Level.getEndlessLevels(stage)[0];
+                    stage.setScene(level.getScene(stage));
+                    stage.show();
+                }
+            });
+
+            btns[0].setOnAction(new EventHandler<ActionEvent>() {
+                @Override
+                public void handle(ActionEvent actionEvent) {
+                    Level level = Level.getEndlessLevels(stage)[0];
+
+                    Label label = new Label(60 + "");
+                    label.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, null, null)));
+                    label.setTextFill(Color.ROYALBLUE);
+                    label.setFont(new Font("", 30));
+
+                    Runnable r = new Runnable() {
+                        @Override
+                        public void run() {
+                            int j = 60;
+                            try {
+                                while (j >= 0) {
+                                    if (!level.getWorld().isStopped()) {
+                                        int finalI = j;
+                                        // the following to be run on main (UI) thread
+                                        Platform.runLater(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                if (finalI == 0) {
+                                                    levels[0].getWorld().stop();
+                                                    levels[0].getWorld().getChildren().remove(label);
+                                                    Scene scene = Menu.getScoreCount(stage, ((BallWorld) levels[0].getWorld()).getScore());
+                                                    stage.setScene(scene);
+                                                    stage.show();
+                                                }
+                                                label.setText(finalI + "");
+                                            }
+                                        });
+                                        Thread.sleep(1000);
+                                        j--;
+                                    } else {
+                                        Thread.sleep(10);
+                                    }
+                                }
+                            } catch (InterruptedException e) {e.printStackTrace();}
+                        }
+                    };
+                    Thread thread = new Thread(r);
+                    thread.start();
+
+                    BorderPane timerPane = new BorderPane();
+                    timerPane.setPrefSize(700, 100);
+                    timerPane.setCenter(label);
+                    label.setAlignment(Pos.CENTER);
+                    level.getWorld().getChildren().add(timerPane);
+                    timerPane.setLayoutY(200);
+                    stage.setScene(level.getScene(stage));
+                    stage.show();
+                }
+            });
+
+
         }
 
 
@@ -505,6 +636,32 @@ public class Menu extends World {
         screen.getChildren().addAll(pane);
 
         return screen.getScene();
+    }
+
+
+
+    public static Button getQuitBtn(World world, Stage stage) {
+        Button btn = new Button();
+        ImageView img = new ImageView("resources/x.png");
+        img.setFitHeight(22); img.setFitWidth(22);
+        btn.setGraphic(img);
+
+        btn.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(4), new Insets(8))));
+        btn.setPadding(new Insets(5, 10, 5, 10));
+        btn.setTooltip(new Tooltip("QUIT"));
+        btn.getTooltip().setFont(new Font("", 10));
+        btn.setFont(new Font("", 20));
+
+        btn.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent actionEvent) {
+
+                stage.setScene(getScoreCount(stage, ((BallWorld)world).getScore()));
+                stage.show();
+            }
+        });
+
+        return btn;
     }
 
     // panel 1 = back btn + home btn
@@ -538,9 +695,24 @@ public class Menu extends World {
         return box;
     }
 
+    public static HBox getBtnPanel3(Stage stage, Level level, boolean isClassic) {
+        Button btn = Menu.getPauseBtn(stage, level, Color.rgb(120, 191, 255), isClassic);
+        Menu.setButtonBrightness(btn, Color.rgb(120, 191, 255));
+
+        Button btn2 = Menu.getQuitBtn(level.getWorld(), stage);
+        Menu.setButtonBrightness(btn2, Color.rgb(120, 191, 255));
+
+        HBox box = new HBox();
+        box.setSpacing(0);
+        box.getChildren().addAll(btn2, btn);
+        return box;
+    }
+
     public static Scene getLevelCleared() {
         Menu menu = new Menu();
+        menu.setPrefSize(700, 500);
         BorderPane pane = new BorderPane();
+        pane.setPrefSize(700, 500);
         Level.setCloudTransition(menu);
 
         Label clear = new Label("Level Cleared!");
@@ -554,9 +726,11 @@ public class Menu extends World {
 
     }
 
-    public static Scene getScoreCount(Score score) {
+    public static Scene getScoreCount(Stage stage, Score score) {
         Menu menu = new Menu();
+        menu.setPrefSize(700, 500);
         BorderPane pane = new BorderPane();
+        pane.setPrefSize(700, 500);
         Level.setCloudTransition(menu);
 
         VBox box = new VBox();
@@ -573,6 +747,10 @@ public class Menu extends World {
         myScore.setTextFill(Color.ROYALBLUE);
 
         box.getChildren().addAll(text, myScore);
+
+        HBox buttons = getBtnPanel1(stage, getSelectionScreen(stage, getOpeningScreen(stage)));
+
+        pane.setTop(buttons);
         pane.setCenter(box);
 
         menu.getChildren().add(pane);

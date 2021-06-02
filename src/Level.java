@@ -1,5 +1,7 @@
 import javafx.animation.AnimationTimer;
+import javafx.application.Platform;
 import javafx.event.EventHandler;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -11,16 +13,18 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.Stop;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
 import java.io.Console;
+import java.util.Timer;
 
 public class Level {
     private String name;
     private BorderPane rootNode;
     private Scene scene;
     private Scene prevScene;
-    private World world;
+    private BallWorld world;
     private static final double width = 700;
     private static final double height = 500;
 
@@ -194,7 +198,7 @@ public class Level {
             BorderPane pane = new BorderPane();
             Level lvl = levels[i];
 
-            pane.setRight(Menu.getPauseBtn(stage, lvl, Color.rgb(120, 191, 255), true));
+            pane.setRight(Menu.getBtnPanel3(stage, lvl, true));
             pane.setMinSize(700, 500);
             pane.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, null, null)));
 
@@ -205,13 +209,17 @@ public class Level {
 
 
             lvl.getWorld().getChildren().add(box);
+
+            Brick b = new MovingBrick(0, 0);
+            b.setX(200); b.setY(100);
+
+            lvl.getWorld().add(b);
+
+
+
         }
 
-        Level lvl = levels[0];
-        Brick b = new MovingBrick(0, 0);
-        b.setX(100); b.setY(100);
 
-        lvl.getWorld().add(b);
 
         return levels;
     }
@@ -227,7 +235,7 @@ public class Level {
             BorderPane pane = new BorderPane();
             lvl.endlessMode(stage);
 
-            pane.setRight(Menu.getPauseBtn(stage, lvl, Color.rgb(120, 191, 255), false));
+            pane.setRight(Menu.getBtnPanel3(stage, lvl, false));
             pane.setMinSize(700, 500);
             pane.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, null, null)));
 
@@ -237,8 +245,8 @@ public class Level {
             HBox box = Menu.getBtnPanel2(stage, false);
 
             lvl.getWorld().getChildren().add(box);
-        }
 
+        }
 
         return levels;
     }

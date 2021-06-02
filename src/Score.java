@@ -1,3 +1,4 @@
+import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 
@@ -7,6 +8,7 @@ public class Score extends Text {
     public Score() {
         value = 0;
         setFont(new Font("serif", 20));
+        setFill(Color.ROYALBLUE);
         updateDisplay();
     }
 
