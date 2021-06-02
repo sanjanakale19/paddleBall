@@ -19,13 +19,7 @@ public class Game extends Application{
 	public void start(Stage myStage) {
 		this.stage = myStage;
 
-		BorderPane rootNode = new BorderPane();
-		Scene scene = new Scene(rootNode);
-
-
-
 		Menu menu = Menu.getOpeningScreen(myStage);
-//		Level.setCloudTransition(menu);
 
 		stage.setScene(menu.getMenuScene());
 

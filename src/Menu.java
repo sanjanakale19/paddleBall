@@ -82,7 +82,7 @@ public class Menu extends World {
                 stage.show();
             }
         });
-        setButtonBrightness(start, screen.color);
+        setButtonBrightness(start, Color.FLORALWHITE);
 
         start.setVisible(true);
         start.setBackground(new Background(new BackgroundFill(Color.TRANSPARENT, new CornerRadii(4), new Insets(8))));
@@ -498,7 +498,7 @@ public class Menu extends World {
                                         Platform.runLater(new Runnable() {
                                             @Override
                                             public void run() {
-                                                stage.setScene(Menu.getScoreCount(stage, ((BallWorld) lvl.getWorld()).getScore()));
+                                                stage.setScene(Menu.getScoreCount(stage, lvl.getWorld().getScore()));
                                                 stage.show();
                                             }
                                         });
@@ -529,7 +529,6 @@ public class Menu extends World {
 //
 //                                    stage.setScene(Menu.getScoreCount(stage, ((BallWorld)lvl.getWorld()).getScore()));
 //                                    stage.show();
-//                                    System.out.print("worked ");
 //                                    this.stop();
 //                                }
 //                            }
@@ -593,7 +592,7 @@ public class Menu extends World {
                                                 if (finalI == 0) {
                                                     levels[0].getWorld().stop();
                                                     levels[0].getWorld().getChildren().remove(label);
-                                                    Scene scene = Menu.getScoreCount(stage, ((BallWorld) levels[0].getWorld()).getScore());
+                                                    Scene scene = Menu.getScoreCount(stage, level.getWorld().getScore());
                                                     stage.setScene(scene);
                                                     stage.show();
                                                 }
@@ -732,6 +731,7 @@ public class Menu extends World {
         BorderPane pane = new BorderPane();
         pane.setPrefSize(700, 500);
         Level.setCloudTransition(menu);
+        menu.setBackground(new Background(new BackgroundFill(menu.color, null, null)));
 
         VBox box = new VBox();
         box.setAlignment(Pos.CENTER);

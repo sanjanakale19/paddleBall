@@ -24,7 +24,7 @@ public class Level {
     private BorderPane rootNode;
     private Scene scene;
     private Scene prevScene;
-    private BallWorld world;
+    private final BallWorld world;
     private static final double width = 700;
     private static final double height = 500;
 
@@ -39,7 +39,7 @@ public class Level {
         rootNode.setCenter(world);
     }
 
-    public World getWorld() {
+    public BallWorld getWorld() {
         return world;
     }
 
@@ -206,20 +206,83 @@ public class Level {
             lvl.initializeLevel(stage);
 
             HBox box = Menu.getBtnPanel2(stage, true);
-
-
             lvl.getWorld().getChildren().add(box);
 
-            Brick b = new MovingBrick(0, 0);
-            b.setX(200); b.setY(100);
-
-            lvl.getWorld().add(b);
-
-
+//            Brick b = new MovingBrick(0, 0);
+//            b.setX(200); b.setY(100);
+//
+//            lvl.getWorld().add(b);
 
         }
 
+        // level 1
+        Level lvl = levels[0];
+        for (int i = 100; i < 600;) {
+            Brick brick = new MovingBrick(0, 0);
+            brick.setX(i); brick.setY(180);
+            lvl.getWorld().add(brick);
 
+            Brick brick2 = new MovingBrick(0, 0);
+            brick2.setX(60); brick2.setY(i - 50);
+            lvl.getWorld().add(brick2);
+
+            i += brick.getWidth() + 20;
+        }
+
+        // level 2
+        lvl = levels[1];
+        for (int i = 0; i < 7; i++) {
+            for (int j = 7; j > i; j--) {
+                Brick brick = new MovingBrick(0, 0);
+                brick.setX(i * 80 + 30); brick.setY(j * 30 + 40);
+                lvl.getWorld().add(brick);
+            }
+        }
+
+        // level 3
+        lvl = levels[2];
+        for (int rows = 1, incr = 1, i = 0; i < 9; i++) {
+            for (int j = 0; j < rows; j++) {
+                Brick brick = new MovingBrick(0, 0);
+                brick.setX(i * 75 + 25); brick.setY(j * 45 + 40);
+                lvl.getWorld().add(brick);
+            }
+            rows += incr;
+            if (rows == 5) {
+                incr = -1;
+            }
+        }
+
+        // level 4
+        lvl = levels[3];
+        for (int rows = 8, incr = -2, i = 0; i < 9; i++) {
+            for (int j = rows; j > 0; j--) {
+                Brick brick = new MovingBrick(0, 0);
+                brick.setX(i * 75 + 30); brick.setY(j * 30 + 40);
+                lvl.getWorld().add(brick);
+            }
+            rows += incr;
+            if (rows == 0) {
+                incr = 2;
+            }
+        }
+
+        // level 5
+        lvl = levels[4];
+        for (int k = 0; k < 2; k++) {
+            for (int rows = 1, incr = 2, i = 0; i < 5; i++) {
+                for (int j = 0; j < rows; j++) {
+                    Brick brick = new MovingBrick(0, 0);
+                    brick.setX(i * 65 + 25 + k*350);
+                    brick.setY(j * 45 + 40);
+                    lvl.getWorld().add(brick);
+                }
+                rows += incr;
+                if (rows == 5) {
+                    incr = -2;
+                }
+            }
+        }
 
         return levels;
     }
