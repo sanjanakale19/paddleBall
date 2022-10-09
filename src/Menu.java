@@ -467,52 +467,41 @@ public class Menu extends World {
                 setButtonBrightness(btns[i], Menu.color);
 
                 int finalI = i;
-                btns[i].setOnAction(new EventHandler<ActionEvent>() {
-                    @Override
-                    public void handle(ActionEvent actionEvent) {
-                        Level lvl = Level.getClassicLevels(stage)[finalI];
+                btns[i].setOnAction(actionEvent -> {
+                    Level lvl = Level.getClassicLevels(stage)[finalI];
 
-                        new Thread(new Runnable() {
-                            @Override
-                            public void run() {
-                                while (true) {
-                                    if (lvl.getWorld().getObjects(MovingBrick.class).size() == 0) {
-                                        // the following to be run on main (UI) thread
-                                        Platform.runLater(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                lvl.getWorld().stop();
+                    new Thread(() -> {
+                        while (true) {
+                            if (lvl.getWorld().getObjects(MovingBrick.class).size() == 0) {
+                                // the following to be run on main (UI) thread
+                                Platform.runLater(() -> {
+                                    lvl.getWorld().stop();
 
-                                                stage.setScene(Menu.getLevelCleared());
-                                                stage.show();
-                                            }
-                                        });
+                                    stage.setScene(Menu.getLevelCleared());
+                                    stage.show();
+                                });
 
-                                        try {
-                                            Thread.sleep(2000);
-                                        } catch (Exception e) {
-                                            e.printStackTrace();
-                                        }
-
-                                        // the following to be run on main (UI) thread
-                                        Platform.runLater(new Runnable() {
-                                            @Override
-                                            public void run() {
-                                                stage.setScene(Menu.getScoreCount(stage, lvl.getWorld().getScore()));
-                                                stage.show();
-                                            }
-                                        });
-
-                                        break;
-                                    }
-                                    try {
-                                        Thread.sleep(20);
-                                    } catch (InterruptedException e) {
-                                        e.printStackTrace();
-                                    }
+                                try {
+                                    Thread.sleep(2000);
+                                } catch (Exception e) {
+                                    e.printStackTrace();
                                 }
+
+                                // the following to be run on main (UI) thread
+                                Platform.runLater(() -> {
+                                    stage.setScene(Menu.getScoreCount(stage, lvl.getWorld().getScore()));
+                                    stage.show();
+                                });
+
+                                break;
                             }
-                        }).start();
+                            try {
+                                Thread.sleep(20);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }).start();
 //                        AnimationTimer levelCleared = new AnimationTimer() {
 //                            @Override
 //                            public void handle(long l) {
@@ -535,9 +524,8 @@ public class Menu extends World {
 //                        };
 //                        levelCleared.start();
 
-                        stage.setScene(lvl.getScene(stage));
-                        stage.show();
-                    }
+                    stage.setScene(lvl.getScene(stage));
+                    stage.show();
                 });
 
             }
